@@ -1,5 +1,5 @@
 # spring-boot-hello-world-example
-Hello
+
 hello world
 
 spring-boot-hello-world-example
