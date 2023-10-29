@@ -21,5 +21,5 @@ jobs:
           folder_name=$(echo $label | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
           mkdir -p $folder_name
         done
-      # env:
-      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: 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
