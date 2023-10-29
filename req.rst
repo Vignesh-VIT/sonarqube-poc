@@ -7,5 +7,5 @@ Software Requirements
    :status: NEW/CHANGED
    :artifact_type: SC_FUNC_REQ
    :satisfies-dng-req: BI_8CaJVgBHI8qnM1otgXF7Ew
-   :crq: 
+   :crq: test
    :satisfies: 665572
