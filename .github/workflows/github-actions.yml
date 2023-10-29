@@ -1,19 +1,25 @@
-name: Organize Files on PR
+name: Create Folders Based on Labels
 
 on:
   pull_request:
     types:
       - opened
+      - synchronize
 
 jobs:
-  organize_files:
+  create-folders:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Organize files
+
+    - name: Create Folders
       run: |
-        python organize_files.py
+        labels=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q .labels)
+        for label in $labels; do
+          folder_name=$(echo $label | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
+          mkdir -p $folder_name
+        done
       # env:
-      #   GITHUB_TOKEN: ${{ secrets.PMT_CODE_TOKEN }}
+      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
