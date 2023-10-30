@@ -1,31 +1,35 @@
-name: Update RST File with Custom Label
+name: Create Folder based on Labels
 
 on:
   pull_request:
     types:
-      - opened  # Trigger the workflow when a pull request is opened
+      - opened
 
 jobs:
-  update-label:
+  create-folder:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set Custom Label
+      - name: Create Folder
         run: |
-          # Use a custom script or command to update the RST file with the desired label value
-          # For example, you can use sed or a programming language of your choice.
-          # Make sure to store the updated file in the repository.
+          # Extract the labels from the pull request
+          labels=$(jq -r '.pull_request.labels[].name' "$GITHUB_EVENT_PATH")
 
-          # Example using sed to update a label in an RST file:
-          sed -i 's/CustomLabel: .*/CustomLabel: NewValue/' req.rst
+          # Iterate through the labels and create folders
+          for label in $labels; do
+            mkdir -p "$label"
+          done
+        shell: bash
 
-        # Commit and push the changes back to the branch
+      - name: Commit and Push Changes
         run: |
           git config --global user.email "winvicky1998@gmail.com"
           git config --global user.name "Vignesh-VIT"
-          git req.rst
-          git commit -m "Update RST file with custom label"
+          git add .
+          git commit -m "Create folders based on labels"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
