@@ -1,6 +1,4 @@
 # spring-boot-hello-world-example
-Hello
-hello world
 
 spring-boot-hello-world-example
 prerequisite - Java 8 or more needed.
