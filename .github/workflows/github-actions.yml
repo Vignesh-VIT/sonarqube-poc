@@ -1,57 +1,35 @@
+name: Create Folder based on Labels
+
 on:
-  # Trigger analysis when pushing in master or pull requests, and when creating
-  # a pull request. 
-  push:
-    branches:
-      - main
   pull_request:
-      types: [opened, synchronize, reopened]
-name: Main Workflow
+    types:
+      - opened
+
 jobs:
-  sonarqube:
+  create-folder:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-      with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting.
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Triggering SonarQube analysis as results of it are required by Quality Gate check.
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
-      with:
-        projectBaseDir: .
-        args: >
-          -Dsonar.projectKey=sonartest1
-          -Dsonar.sources=./src/
-          -Dsonar.java.binaries=target/classes
-        #  -Dsonar.sources=https://github.com/Vignesh-VIT/hello-world-springboot/
-      env:
-        SONAR_TOKEN: ecc83425827e33617d6efb100307f0ddec4d8081
-        SONAR_HOST_URL: http://20.107.61.102:9000
-#         ProjectName: springboot-helloworld
-#         ProjectKey: sonartest
-#         SONAR_SCANNER_OPTS: -Dsonar.projectKey=sonartest
+      - name: Create Folder
+        run: |
+          # Extract the labels from the pull request
+          labels=$(jq -r '.pull_request.labels[].name' "$GITHUB_EVENT_PATH")
 
-    # Check the Quality Gate status.
-    - name: SonarQube Quality Gate check
-      id: sonarqube-quality-gate-check
-      uses: sonarsource/sonarqube-quality-gate-action@master
-      # Force to fail step after specific time.
-      # timeout-minutes: 5
-      env:
-       SONAR_TOKEN: ecc83425827e33617d6efb100307f0ddec4d8081
-       SONAR_HOST_URL: http://20.107.61.102:9000 
-       
-    # Optionally you can use the output from the Quality Gate in another step.
-    # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
-    - name: "Example show SonarQube Quality Gate Status value"
-      run: |
-        echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+          # Iterate through the labels and create folders
+          for label in $labels; do
+            mkdir -p "$label"
+          done
+        shell: bash
 
-
-
-
-
-
-
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.email "winvicky1998@gmail.com"
+          git config --global user.name "Vignesh-VIT"
+          git add .
+          git commit -m "Create folders based on labels"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
